@@ -4,6 +4,7 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -15,11 +16,17 @@ import server.app.Get15Interface;
 import javafx.scene.control.Button;
 import javafx.event.ActionEvent;
 
+import static java.lang.Thread.sleep;
+
 public class Get15ClientSceneControler {
 
     private String currentPlayer;
 
     private boolean myTurn = false;
+
+    public boolean isMyTurn() {
+        return myTurn;
+    }
 
     private Get15Interface game;
 
@@ -111,6 +118,25 @@ public class Get15ClientSceneControler {
     public void setMessage(String message)
     {
         Platform.runLater(()-> txtActionsField.setText(message));
+
+        if(message.equals("I lost!") || message.equals("I won!"))
+        {
+            class Sleeper extends Thread
+            {
+                public void run() {
+                    try {
+                        sleep(5000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    Platform.exit();
+                }
+            }
+
+            Sleeper sleeper = new Sleeper();
+            sleeper.start();
+        }
     }
 
     public void setMyTurn(boolean turn)

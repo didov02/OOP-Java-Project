@@ -9,6 +9,12 @@ public class CallBackImpl extends UnicastRemoteObject implements CallBack {
 
     private Get15ClientSceneControler thisClient;
 
+    @Override
+    public boolean getTurnStatus() throws RemoteException
+    {
+        return thisClient.isMyTurn();
+    }
+
     public CallBackImpl(Object client) throws RemoteException {
         thisClient = (Get15ClientSceneControler)client;
     }

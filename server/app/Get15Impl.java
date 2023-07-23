@@ -10,28 +10,30 @@ import java.util.ArrayList;
 
 public class Get15Impl extends UnicastRemoteObject implements Get15Interface {
 
-    private CallBack player1 = null;
+    private CallBack player1;
 
-    private CallBack player2 = null;
+    private CallBack player2;
 
-    private ArrayList<Integer> firstPlayerNumbers = new ArrayList<Integer>(5);
+    private final ArrayList<Integer> firstPlayerNumbers;
 
-    private ArrayList<Integer> secondPlayerNumbers = new ArrayList<Integer>(5);
+    private final ArrayList<Integer> secondPlayerNumbers;
 
-    private String firstPlayerChosen = "";
+    private String firstPlayerChosen;
 
-    private String secondPlayerChosen = "";
+    private String secondPlayerChosen;
 
-    private ArrayList<Integer> allChosen = new ArrayList<Integer>(9);
+    private final ArrayList<Integer> allChosen;
 
     public Get15Impl() throws RemoteException
     {
         super();
-    }
-
-    public Get15Impl(int port) throws RemoteException
-    {
-        super(port);
+        player1 = null;
+        player2 = null;
+        firstPlayerChosen = "";
+        secondPlayerChosen = "";
+        firstPlayerNumbers = new ArrayList<Integer>(5);
+        secondPlayerNumbers = new ArrayList<Integer>(5);
+        allChosen = new ArrayList<Integer>(9);
     }
 
     public String connect(CallBack client) throws RemoteException
@@ -62,7 +64,7 @@ public class Get15Impl extends UnicastRemoteObject implements Get15Interface {
 
     public void myChoice(int number, String player) throws RemoteException
     {
-        if(player.equals("First Player"))
+        if(player.equals("First Player") && player1.getTurnStatus())
         {
             if(!allChosen.contains(number) && (number >=1 && number <=9))
             {
@@ -71,9 +73,11 @@ public class Get15Impl extends UnicastRemoteObject implements Get15Interface {
                 firstPlayerChosen+=String.valueOf(number) + ", ";
                 firstPlayerNumbers.add(number);
                 allChosen.add(number);
+                player1.takeTurn(false);
+                player2.takeTurn(true);
             }
         }
-        else
+        else if(player.equals("Second Player") && player2.getTurnStatus())
         {
             if(!allChosen.contains(number) && (number >=1 && number <=9))
             {
@@ -82,6 +86,8 @@ public class Get15Impl extends UnicastRemoteObject implements Get15Interface {
                 secondPlayerChosen+=String.valueOf(number) + ", ";
                 secondPlayerNumbers.add(number);
                 allChosen.add(number);
+                player2.takeTurn(false);
+                player1.takeTurn(true);
             }
         }
 
@@ -118,7 +124,7 @@ public class Get15Impl extends UnicastRemoteObject implements Get15Interface {
                 for(int k=j+1;k<firstPlayerNumbers.size();k++)
                 {
                     if(firstPlayerNumbers.get(i) + firstPlayerNumbers.get(j)
-                    + firstPlayerNumbers.get(k) == 15)
+                            + firstPlayerNumbers.get(k) == 15)
                         flag = true;
                 }
             }
